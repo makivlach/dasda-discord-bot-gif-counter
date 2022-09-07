@@ -4,6 +4,10 @@ DASDA Gif counter bot
 MEME robot, který bude na zprávu od dasdy obsahující GIF 
 (nebo jinou přílohu) odpovídat počítadlem a odpovědí.
 
+Bot si ukládá state automaticky do souboru: `./dist/data/state.json`. Tento state se každý týden resetuje (dle feature requestu).
+
+Ukládání je do JSON souboru, protože pro projekt tohodle rozměru to nemá význam a navíc se nebudu přece dělat s databázovou vrstvou jen kvůli MEMU :D.
+
 ![screeen](./screenshots/screen.png)
 
 ## Nastavení Discord bota
