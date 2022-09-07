@@ -54,7 +54,9 @@ const isValidTenorUrl = (urlString: string) => {
         if (message.author.tag === userInteractionTag && isValidTenorUrl(message.content)) {
             counter++
 
-            message.reply(`Dasda GIF counter: **${counter}**`)
+            const replyText = `Dasda GIF counter: **${counter}**`
+            message.reply(replyText)
+            console.log(replyText)
         }
     })
 
