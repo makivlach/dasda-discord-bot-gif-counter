@@ -60,7 +60,7 @@ const isValidTenorUrl = (urlString: string) => {
 
     client.login(discordToken)
 
-    server.all('/', (req, res) => {
+    server.all('/', (req: any, res: any) => {
         res.send("Bot is running!")
     })
 
