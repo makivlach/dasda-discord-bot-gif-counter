@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import Discord, {GatewayIntentBits, Partials} from 'discord.js'
 import express from 'express'
+import {extractUrls} from "./helpers";
 
 const isValidTenorUrl = (urlString: string) => {
     try {
@@ -51,12 +52,19 @@ const isValidTenorUrl = (urlString: string) => {
     });
 
     client.on('messageCreate', (message) => {
-        if (message.author.tag === userInteractionTag && isValidTenorUrl(message.content)) {
-            counter++
+        const urls = extractUrls(message.content)
 
-            const replyText = `Dasda GIF counter: **${counter}**`
-            message.reply(replyText)
-            console.log(replyText)
+        if (!!urls) {
+            for (const url of urls) {
+                if (message.author.tag === userInteractionTag && isValidTenorUrl(message.content)) {
+                    counter++
+
+                    const replyText = `Dasda GIF counter: **${counter}**`
+                    message.reply(replyText)
+                    console.log(replyText)
+                    return
+                }
+            }
         }
     })
 
