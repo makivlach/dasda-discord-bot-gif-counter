@@ -1,6 +1,16 @@
 import 'dotenv/config'
-import Discord, {GatewayIntentBits, Message} from 'discord.js'
+import Discord, {GatewayIntentBits, Partials} from 'discord.js'
 import express from 'express'
+
+const isValidTenorUrl = (urlString: string) => {
+    try {
+        const url = new URL(urlString)
+        return Boolean(url) && url.host === 'tenor.com'
+    }
+    catch(e){
+        return false
+    }
+}
 
 (async () => {
     const server = express()
@@ -12,22 +22,43 @@ import express from 'express'
         return
     }
 
+    const userInteractionTag = process.env.USER_INTERACTION_TAG
+    if (!userInteractionTag) {
+        console.error('Unable to start the bot. USER_INTERACTION_TAG is required!')
+        return
+    }
+
 
     const client = new Discord.Client({
-        intents: GatewayIntentBits.Guilds
+        intents: [
+            GatewayIntentBits.Guilds,
+            GatewayIntentBits.GuildMessages,
+            GatewayIntentBits.GuildPresences,
+            GatewayIntentBits.GuildMessageReactions,
+            GatewayIntentBits.DirectMessages,
+            GatewayIntentBits.MessageContent
+        ],
+        partials: [
+            Partials.Channel,
+            Partials.Message,
+            Partials.User,
+            Partials.GuildMember,
+            Partials.Reaction
+        ],
+    })
+    client.on('ready', () => {
+        console.log(`Logged in as ${client.user?.tag}!`);
+    });
+
+    client.on('messageCreate', (message) => {
+        if (message.author.tag === userInteractionTag && isValidTenorUrl(message.content)) {
+            counter++
+
+            message.reply(`Dasda GIF counter: **${counter}**`)
+        }
     })
 
-    await client.login(discordToken)
-
-
-    client.on('messageCreate', (message: Message) => {
-      if (message.attachments.size > 0 && message.author.tag === 'Dasda120#6374') {
-          counter++
-
-          message.reply(`Dasda GIF counter: **${counter}**`)
-      }
-    })
-
+    client.login(discordToken)
 
     server.all('/', (req, res) => {
         res.send("Bot is running!")
