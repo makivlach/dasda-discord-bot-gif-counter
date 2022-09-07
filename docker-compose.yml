@@ -6,3 +6,5 @@ services:
       context: .
     ports:
       - 5674:3000
+    volumes:
+      - ./data:/app/dist/data

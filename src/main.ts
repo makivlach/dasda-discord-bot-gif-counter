@@ -1,21 +1,23 @@
 import 'dotenv/config'
 import Discord, {GatewayIntentBits, Partials} from 'discord.js'
 import express from 'express'
-import {extractUrls} from "./helpers";
-
-const isValidTenorUrl = (urlString: string) => {
-    try {
-        const url = new URL(urlString)
-        return Boolean(url) && url.host === 'tenor.com'
-    }
-    catch(e){
-        return false
-    }
-}
+import {
+    createFileIfNotExists,
+    extractUrls,
+    isValidTenorUrl,
+    readOrCreateInitialState, resetStateEveryWeekInterval,
+    writeStateToFile
+} from './helpers'
 
 (async () => {
+    const STATE_FILE_NAME = 'data/state.json'
+    const wasFileCreated = await createFileIfNotExists(STATE_FILE_NAME)
+    if (wasFileCreated) {
+        console.info(`Soubor v místě: ${STATE_FILE_NAME} byl úspěšně vytvořen!`)
+    }
+
+    let state = readOrCreateInitialState(STATE_FILE_NAME)
     const server = express()
-    let counter: number = 0
 
     const discordToken = process.env.DISCORD_TOKEN
     if (!discordToken) {
@@ -57,9 +59,11 @@ const isValidTenorUrl = (urlString: string) => {
         if (!!urls) {
             for (const url of urls) {
                 if (message.author.tag === userInteractionTag && isValidTenorUrl(message.content)) {
-                    counter++
+                    state.counter++
 
-                    const replyText = `Dasda GIF counter: **${counter}**`
+                    const replyText = `Dasda GIF counter: **${state.counter}**`
+                    writeStateToFile(STATE_FILE_NAME, state)
+
                     message.reply(replyText)
                     console.log(replyText)
                     return
@@ -67,6 +71,14 @@ const isValidTenorUrl = (urlString: string) => {
             }
         }
     })
+
+    // Každou minutu kontrolujeme, jestli nastal čas vyresetovat state
+    setInterval(() => {
+        const newState = resetStateEveryWeekInterval(STATE_FILE_NAME, state)
+        if (!!newState) {
+            state = newState
+        }
+    }, 60000)
 
     client.login(discordToken)
 
