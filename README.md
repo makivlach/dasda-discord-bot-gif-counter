@@ -4,6 +4,8 @@ DASDA Gif counter bot
 MEME robot, který bude na zprávu od dasdy obsahující GIF 
 (nebo jinou přílohu) odpovídat počítadlem a odpovědí.
 
+![screeen](./screenshots/screen.png)
+
 ## Nastavení Discord bota
 
 1. [Zde](https://discord.com/developers/applications/) si vytvořit novou aplikaci v sekci `Applications`
